@@ -16,6 +16,7 @@ use KleijnWeb\PhpApi\Descriptions\Description\Schema\ScalarSchema;
 use KleijnWeb\PhpApi\Descriptions\Description\Schema\Schema;
 use KleijnWeb\PhpApi\Hydrator\ClassNameResolver;
 use KleijnWeb\PhpApi\Hydrator\DateTimeSerializer;
+use KleijnWeb\PhpApi\Hydrator\Exception\InvalidInputException;
 use KleijnWeb\PhpApi\Hydrator\Exception\UnsupportedException;
 use KleijnWeb\PhpApi\Hydrator\ObjectHydrator;
 use KleijnWeb\PhpApi\Hydrator\Tests\Types\Category;
@@ -203,6 +204,19 @@ class ObjectHydratorTest extends \PHPUnit_Framework_TestCase
         /** @var DateTimeSerializer $dateTimeSerializer */
         $hydrator = new ObjectHydrator($this->classNameResolver, $dateTimeSerializer = $this->dateTimeSerializer, true);
         $hydrator->hydrate(['id' => 1], $petSchema);
+    }
+
+    /**
+     * @test
+     */
+    public function willThrowExceptionIfTryingToHydrateArrayToObjectType()
+    {
+        $this->setExpectedException(InvalidInputException::class);
+        $objectSchema = new ObjectSchema((object)['type' => 'object']);
+
+        /** @var DateTimeSerializer $dateTimeSerializer */
+        $hydrator = new ObjectHydrator($this->classNameResolver, $dateTimeSerializer = $this->dateTimeSerializer, true);
+        $hydrator->hydrate([], $objectSchema);
     }
 
     /**
