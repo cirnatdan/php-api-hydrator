@@ -13,7 +13,9 @@ use KleijnWeb\PhpApi\Descriptions\Description\Schema\ArraySchema;
 use KleijnWeb\PhpApi\Descriptions\Description\Schema\ObjectSchema;
 use KleijnWeb\PhpApi\Descriptions\Description\Schema\ScalarSchema;
 use KleijnWeb\PhpApi\Descriptions\Description\Schema\Schema;
+use KleijnWeb\PhpApi\Hydrator\Exception\InvalidInputException;
 use KleijnWeb\PhpApi\Hydrator\Exception\UnsupportedException;
+use function PHPSTORM_META\type;
 
 /**
  * @author John Kleijn <john@kleijnweb.nl>
@@ -96,6 +98,9 @@ class ObjectHydrator implements Hydrator
         }
         if ($schema instanceof ObjectSchema) {
             if (!$schema->hasComplexType()) {
+                if (!is_object($node)) {
+                    throw new InvalidInputException('Object expected but received ' . gettype($node));
+                }
                 $object = clone $node;
                 foreach ($node as $name => $value) {
                     if ($schema->hasPropertySchema($name)) {
